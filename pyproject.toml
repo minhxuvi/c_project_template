@@ -8,14 +8,19 @@ c_project_template = ["*.json"]
 
 [project]
 name = "c_project_template"
-authors = [{ name = "Minh Mốc Meo", email = "minhxuvi@xuvi.vn" }]
+authors = [{ name = "Minh Mốc Meo", email = "minh@xuvi.vn" }]
 description = "My package description"
 readme = "README.md"
 requires-python = ">=3.7"
 keywords = ["one", "two"]
 license = { text = "MIT" }
 classifiers = ["Programming Language :: Python :: 3"]
-dependencies = ["numpy", 'importlib-metadata; python_version<"3.8"']
+dependencies = [
+    "numpy",
+    'importlib-metadata; python_version<"3.8"',
+    "meson",
+    "ninja",
+]
 dynamic = ["version"]
 
 [project.optional-dependencies]
@@ -35,15 +40,15 @@ markers = ["slow: marks tests as slow (deselect with '-m \"not slow\"')"]
 line-length = 119
 extend-exclude = '''
 (
-  venv/
-  | venv
+  .venv/
+  | .venv
 )
 '''
 
 [tool.flake8]
 docstring-convention = "all"
 ignore = ["D107", "D212", "E501", "W503", "W605", "D203", "D100"]
-exclude = ["venv"]
+exclude = [".venv"]
 max-line-length = 119
 
 # radon
@@ -57,13 +62,13 @@ line_length = 119
 
 [tool.pylint."messages control"]
 disable = [
-  "line-too-long",
-  "trailing-whitespace",
-  "missing-function-docstring",
-  "consider-using-f-string",
-  "import-error",
-  "too-few-public-methods",
-  "redefined-outer-name",
+    "line-too-long",
+    "trailing-whitespace",
+    "missing-function-docstring",
+    "consider-using-f-string",
+    "import-error",
+    "too-few-public-methods",
+    "redefined-outer-name",
 ]
 
 [tool.ruff]
