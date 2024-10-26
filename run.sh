@@ -8,6 +8,7 @@ THIS_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 function install {
     python -m pip install --upgrade pip
     python -m pip install --editable "$THIS_DIR/[dev]"
+    python -m pip freeze > "$THIS_DIR/requirements.txt"
 }
 
 # run linting, formatting, and other static code quality tools
