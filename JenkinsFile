@@ -1,0 +1,92 @@
+def String C_REPO = 'c_project_template'
+
+pipeline {
+    agent any
+    options {
+        buildDiscarder(logRotator(daysToKeepStr: '30', artifactNumToKeepStr: '30'))
+        disableConcurrentBuilds()
+        skipDefaultCheckout()
+        timestamps()
+        timeout(time: 1, unit: 'HOURS')
+    }
+    triggers {
+        cron('H H(17-22) * * *')
+    }
+    parameters {
+        string(name: 'REV', defaultValue: 'main', description: 'c_project_template revision', trim: true)
+    }
+    stages {
+        stage('SCM') {
+            steps {
+                cleanWs(
+                    patterns: [
+                        [pattern: '.venv/**', type: 'EXCLUDE'],
+                        [pattern: '.venv', type: 'EXCLUDE'],
+                        [pattern: '.git/**', type: 'EXCLUDE'],
+                        ]
+                )
+                checkout([$class: 'GitSCM',
+                            branches: [[name: "${params.REV}"]],
+                            extensions: [
+                                [$class: 'CloneOption', shallow: true],
+                                [$class: 'RelativeTargetDirectory', relativeTargetDir: C_REPO],
+                                [$class: 'SubmoduleOption', disableSubmodules: true]],
+                            userRemoteConfigs: [[credentialsId: 'jenkins', url: "git@github.com:minhxuvi/${C_REPO}.git"]]])
+            }
+        }
+        stage('Prepare venv') {
+            steps {
+                sh'''
+                set -ex
+                python3 -m venv .venv
+                source $WORKSPACE/.venv/bin/activate
+                python -m pip install --upgrade pip
+                deactivate
+                '''
+            }
+        }
+        stage('lint') {
+            steps {
+                echo 'lint-format-and-static-code-checks'
+                dir("${C_REPO}") {
+                    sh'''
+                    source $WORKSPACE/.venv/bin/activate
+                    python -m pip install pre-commit
+                    bash -x run.sh lint:ci
+                    deactivate
+                    '''
+                }
+            }
+        }
+        stage('Build') {
+            steps {
+                dir("${C_REPO}") {
+                    sh'''
+                    source $WORKSPACE/.venv/bin/activate
+                    python -m pip install build
+                    bash -x run.sh build
+                    deactivate
+                    '''
+                }
+            }
+        }
+        stage('Test') {
+            steps {
+                dir("${C_REPO}") {
+                    sh'''
+                    source $WORKSPACE/.venv/bin/activate
+                    python -m pip install pytest pytest-cov ./dist/*.whl
+                    bash -x run.sh test:ci
+                    deactivate
+                    '''
+                }
+            }
+        }
+        stage('Deploy') {
+            steps {
+                echo 'Tobe implemented...'
+            // Add deploy steps here
+            }
+        }
+    }
+}
