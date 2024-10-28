@@ -41,5 +41,7 @@
         "moshfeu.compare-folders",
         // Makefile
         "ms-vscode.makefile-tools",
+        // JenkinsFile, groovy
+        "NicolasVuillamy.vscode-groovy-lint",
     ]
 }
