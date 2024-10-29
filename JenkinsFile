@@ -19,6 +19,8 @@ pipeline {
         stage('SCM') {
             steps {
                 cleanWs(
+                    deleteDirs: true,
+                    notFailBuild: true,
                     patterns: [
                         [pattern: '.venv/**', type: 'EXCLUDE'],
                         [pattern: '.venv', type: 'EXCLUDE'],
