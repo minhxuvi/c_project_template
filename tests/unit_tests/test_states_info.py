@@ -1,6 +1,5 @@
 """Tests for `c_project_template.states_info`."""
 
-
 import pytest
 
 from c_project_template.states_info import (
